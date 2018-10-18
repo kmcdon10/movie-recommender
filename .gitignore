@@ -1,0 +1,8 @@
+.idea/*build/classes build/libs build/reports build/test-results build/tmp
+.gradle/
+.idea/
+build/
+gradle/
+out/
+gradlew
+gradlew.bat
