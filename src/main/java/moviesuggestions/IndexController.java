@@ -13,7 +13,6 @@ public class IndexController {
     @Autowired
     private MovieService movieService;
 
-
     @GetMapping
     public List<String> index() {
         return movieService.getRecommendedMovies();

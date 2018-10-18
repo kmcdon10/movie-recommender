@@ -21,7 +21,6 @@ public class MovieServiceTest {
 
     @InjectMocks private MovieService underTest;
     @Mock private UserService userService = mock(UserService.class);
-//    @Autowired private RandomNumberGenerator randomNumberGenerator;
 
     private final static ArrayList<String> kidsMovies = new ArrayList<String>() {{
         add("Shrek");
@@ -42,21 +41,21 @@ public class MovieServiceTest {
 
     @Test
     public void testGetRecommendedMovies() {
-        doReturn("19").when(userService).getAge();
+        doReturn(19).when(userService).getAge();
         List<String> movies = underTest.getRecommendedMovies();
         assertEquals(adultMovies.get(0), movies.get(0));
     }
 
     @Test
     public void testGetRecommendedMoviesForTeens() {
-        doReturn("15").when(userService).getAge();
+        doReturn(15).when(userService).getAge();
         List<String> movies = underTest.getRecommendedMovies();
         assertEquals(teenMovies.get(0), movies.get(0));
     }
 
     @Test
     public void testGetRecommendedMoviesForKids() {
-        doReturn("12").when(userService).getAge();
+        doReturn(12).when(userService).getAge();
         List<String> movies = underTest.getRecommendedMovies();
         assertEquals(kidsMovies.get(0), movies.get(0));
     }
@@ -65,7 +64,7 @@ public class MovieServiceTest {
     @Test
     public void testGetRecommendedMoviesWhenUserServiceThrowsException() {
 //        when(userService.getAge()).thenThrow(new RuntimeException());
-//        doThrow(new ArithmeticException()).when(userService).getAge();
+        doThrow(new ArithmeticException()).when(userService).getAge();
 
         List<String> movies = underTest.getRecommendedMovies();
         assertEquals(kidsMovies.get(0), movies.get(0));

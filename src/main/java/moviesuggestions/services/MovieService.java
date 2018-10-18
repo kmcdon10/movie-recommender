@@ -1,7 +1,6 @@
 package moviesuggestions.services;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-//import moviesuggestions.utils.RandomNumberGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +11,6 @@ import java.util.List;
 public class MovieService {
 
     @Autowired private UserService userService;
-//    @Autowired private RandomNumberGenerator randomNumberGenerator;
 
     private final static ArrayList<String> kidsList = new ArrayList<String>() {{
         add("Shrek");
@@ -30,20 +28,9 @@ public class MovieService {
         add("Saving Private Ryan");
     }};
 
-//    @HystrixCommand(fallbackMethod = "getKidsMovies")
-    public List<String> getRecommendedMovies() {
-        return getMovies();
-    }
-
     @HystrixCommand(fallbackMethod = "getKidsMovies")
-    private List<String> getMovies() {
-        String resp = userService.getAge();
-        int age;
-        try {
-            age = Integer.parseInt(resp);
-        } catch (NumberFormatException e) {
-            age = 1;
-        }
+    public List<String> getRecommendedMovies() {
+        int age = userService.getAge();
         System.out.println("age: " + age);
         if (age <= 13) {
             return kidsList;
