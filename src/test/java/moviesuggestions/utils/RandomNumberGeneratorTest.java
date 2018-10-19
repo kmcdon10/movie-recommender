@@ -27,8 +27,7 @@ public class RandomNumberGeneratorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testRandomNumberGenerator_throwsErrorWhenMinGreaterThanMax() {
-        int actual = underTest.getRandomNumberInRange(1, 0);
-
+        underTest.getRandomNumberInRange(1, 0);
     }
 
 }
