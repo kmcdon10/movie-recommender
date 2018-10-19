@@ -1,6 +1,7 @@
 package moviesuggestions.services;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,10 +29,12 @@ public class MovieService {
         add("Saving Private Ryan");
     }};
 
-    @HystrixCommand(fallbackMethod = "getKidsMovies")
+    @HystrixCommand(fallbackMethod = "getKidsMovies",
+            commandProperties = {
+                    @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "100")
+            })
     public List<String> getRecommendedMovies() {
         int age = userService.getAge();
-        System.out.println("age: " + age);
         if (age <= 13) {
             return kidsList;
         } else if (age <= 17) {
@@ -42,7 +45,6 @@ public class MovieService {
     }
 
     public List<String> getKidsMovies() {
-        System.out.println("using fallback method");
         return kidsList;
     }
 

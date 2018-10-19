@@ -1,11 +1,13 @@
 package moviesuggestions.services;
 
 import moviesuggestions.App;
-import org.junit.Ignore;
+import moviesuggestions.utils.RandomNumberGenerator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.internal.stubbing.answers.AnswersWithDelay;
+import org.mockito.internal.stubbing.answers.Returns;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -16,11 +18,12 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ContextConfiguration(classes = App.class)
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class MovieServiceTest {
 
     @InjectMocks private MovieService underTest;
     @Mock private UserService userService = mock(UserService.class);
+    @Mock private RandomNumberGenerator randomNumberGenerator = mock(RandomNumberGenerator.class);
 
     private final static ArrayList<String> kidsMovies = new ArrayList<String>() {{
         add("Shrek");
@@ -38,35 +41,46 @@ public class MovieServiceTest {
         add("Saving Private Ryan");
     }};
 
-
     @Test
     public void testGetRecommendedMovies() {
         doReturn(19).when(userService).getAge();
-        List<String> movies = underTest.getRecommendedMovies();
-        assertEquals(adultMovies.get(0), movies.get(0));
+        List<String> actualMovies = underTest.getRecommendedMovies();
+        assertEquals(adultMovies, actualMovies);
     }
 
     @Test
     public void testGetRecommendedMoviesForTeens() {
         doReturn(15).when(userService).getAge();
-        List<String> movies = underTest.getRecommendedMovies();
-        assertEquals(teenMovies.get(0), movies.get(0));
+        List<String> actual = underTest.getRecommendedMovies();
+        assertEquals(teenMovies, actual);
     }
 
     @Test
     public void testGetRecommendedMoviesForKids() {
         doReturn(12).when(userService).getAge();
-        List<String> movies = underTest.getRecommendedMovies();
-        assertEquals(kidsMovies.get(0), movies.get(0));
+        List<String> actual = underTest.getRecommendedMovies();
+        assertEquals(kidsMovies, actual);
     }
 
-    @Ignore
     @Test
     public void testGetRecommendedMoviesWhenUserServiceThrowsException() {
-//        when(userService.getAge()).thenThrow(new RuntimeException());
-        doThrow(new ArithmeticException()).when(userService).getAge();
+        when(randomNumberGenerator.getRandomNumberInRange(anyInt(), anyInt())).thenThrow(new IllegalArgumentException("illegal argument"));
 
-        List<String> movies = underTest.getRecommendedMovies();
-        assertEquals(kidsMovies.get(0), movies.get(0));
+        List<String> actualMovies = underTest.getRecommendedMovies();
+        assertEquals(kidsMovies, actualMovies);
+    }
+
+    @Test
+    public void testGetRecommendedMoviesWhenUserServiceTimesOut() {
+        when(randomNumberGenerator.getRandomNumberInRange(anyInt(), anyInt())).thenAnswer(new AnswersWithDelay(150, new Returns(20)));
+
+        List<String> actualMovies = underTest.getRecommendedMovies();
+        assertEquals(kidsMovies, actualMovies);
+    }
+
+    @Test
+    public void testGetMoviesFallback() {
+        List<String> actualMovies = underTest.getKidsMovies();
+        assertEquals(kidsMovies, actualMovies);
     }
 }
